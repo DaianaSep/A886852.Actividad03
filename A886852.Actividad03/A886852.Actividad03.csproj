@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="bin\Debug\Files\Plan_de_cuentas.txt" />
     <Content Include="Files\Plan_de_cuentas.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

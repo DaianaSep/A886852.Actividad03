@@ -167,8 +167,8 @@ namespace A886852.Actividad03
 
                 }
 
-                Console.ReadKey();
             }
+            Console.ReadKey();
         }
     }
 }
