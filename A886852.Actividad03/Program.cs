@@ -11,15 +11,13 @@ namespace A886852.Actividad03
     {
         static void Main(string[] args)
         {
-            bool Salida = false;
-            decimal debe;
-            decimal haber;
+            decimal debe = 0;
+            decimal haber = 0;
+            int CodCuentaOk = 0;
+            decimal ImporteOk = 0;
             DateTime fechaOk = DateTime.Now;
             bool flag;
             string nuevaLinea = "1";
-            int CodCuentaOk = 0;
-            decimal ImporteOk = 0;
-
 
             var listaAsientos = new List<Asiento>();
             int UltNumAsiento = LibroDiario.GetUltAsiento();
@@ -32,24 +30,38 @@ namespace A886852.Actividad03
             }
             else
             {
-                Console.WriteLine("<------------------------ Generación de Libro Diario ----------------------------->");
-
+                Console.WriteLine("<------------------------ Generación/Actualización de Libro Diario ----------------------------->");
                 Console.WriteLine();
-                Console.WriteLine("Seleccione una de las siguientes opciones del menú:\n" +
-                    "1 - Crear Asiento \n" +
-                    "9 - Finalizar");
+
+                Console.WriteLine("Seleccione una de las siguientes opciones del menú y presione [ENTER] para continuar:\n" +
+               "1 - Crear Asiento \n" +
+               "9 - Finalizar");
                 nuevaLinea = Console.ReadLine();
-                while (nuevaLinea != "1" && nuevaLinea != "9")
+
+                switch (nuevaLinea)
                 {
-                    Console.WriteLine("No ha ingresado una opción válida.");
-                    nuevaLinea = "1";
+                    case "1":
+                        nuevaLinea = "1";
+                        break;
+                    case "9":
+                        break;
+                    default:
+                        do
+                        {
+                            Console.WriteLine("No ha ingresado una opción válida.");
+                            Console.WriteLine("Seleccione una de las siguientes opciones del menú y presione [ENTER] para continuar:\n" +
+                               "1 - Crear Asiento \n" +
+                               "9 - Finalizar");
+                            nuevaLinea = Console.ReadLine();
+                        } while (nuevaLinea != "1" && nuevaLinea != "9");
+                        break;
                 }
-               
 
                 while (nuevaLinea == "1")
                 {
                     debe = 0;
                     haber = 0;
+                    Console.WriteLine();
                     Console.WriteLine($"Ingrese a continuación los datos del asiento contable N° {UltNumAsiento + 1}:");
                     Console.WriteLine();
                     do
@@ -61,7 +73,7 @@ namespace A886852.Actividad03
 
                     var crearAsiento = new Asiento(UltNumAsiento + 1, fechaOk);
                     listaAsientos.Add(crearAsiento);
-
+                    nuevaLinea = "1";
                     while (nuevaLinea == "1")
                     {
                         var linea = new LineaAsiento();
@@ -72,7 +84,7 @@ namespace A886852.Actividad03
                         {
                             do
                             {
-                                Console.Write(" - Código de cuenta: ");
+                                Console.Write(" - Código de la cuenta: ");
                                 string CodCuenta = Console.ReadLine();
                                 flag = Validaciones.ValidarEntero(CodCuenta, ref CodCuentaOk);
                             } while (!flag);
@@ -85,7 +97,8 @@ namespace A886852.Actividad03
                             }
                             else
                             {
-                                Console.WriteLine($"La cuenta ingresada es: {Existe.Nombre} - Tipo: {Existe.Tipo}");
+                                Console.WriteLine($" --- La cuenta ingresada es: {Existe.Nombre} - Tipo: {Existe.Tipo} --- ");
+                                linea.CodCuenta = CodCuentaOk;
                             }
 
                         } while (!flag);
@@ -94,8 +107,8 @@ namespace A886852.Actividad03
                         {
                             flag = false;
                             Console.WriteLine();
-                            Console.Write("Ingrese a continuación el importe de la línea. IMPORTANTE! Si corresponde al HABER debe ingresarse con el signo de resta '-' al inicio) \n " +
-                                "- Importe: ");
+                            Console.Write("Ingrese a continuación el importe de la línea.\nIMPORTANTE! Si corresponde al HABER debe ingresarse con signo negativo\n" +
+                                " - Importe: ");
                             string Importe = Console.ReadLine();
                             flag = Validaciones.ValidarMonto(Importe, ref ImporteOk);
                         } while (!flag);
@@ -109,7 +122,7 @@ namespace A886852.Actividad03
                             linea.Haber += Math.Abs(ImporteOk);
                         }
 
-
+                        Console.WriteLine();
                         Console.WriteLine($"¿Desea agregar otra línea en el asiento N°{UltNumAsiento + 1}?\n" +
                             $"1 - SI\n" +
                             $"0 - NO");
@@ -125,9 +138,8 @@ namespace A886852.Actividad03
 
                         if (nuevaLinea == "0" && debe != haber)
                         {
-                            Console.WriteLine($"Ups! No se cumple la Partida doble ({debe} != {haber}). Ingrese nuevamente las líneas del asiento");
-                            debe = 0;
-                            haber = 0;
+                            Console.WriteLine($"Ups! No se cumple la Partida Doble ({debe} != {haber}). Ingrese una nueva línea para equilibrar las partidas.");
+                            Console.WriteLine();
                             nuevaLinea = "1";
                         }
                     }
@@ -142,17 +154,20 @@ namespace A886852.Actividad03
                     while (nuevaLinea != "1" && nuevaLinea != "0")
                     {
                         Console.WriteLine("No ha ingresado una opción válida.");
-                        nuevaLinea = Convert.ToString(Console.ReadKey(true));
+                        nuevaLinea = Console.ReadLine();
                     }
                 }
-                LibroDiario.GrabarAsiento(listaAsientos);
-                
 
-                if (nuevaLinea == "9")
+                if (nuevaLinea == "0")
                 {
-                    string PathDiario = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Files", "Diario.txt");
-                    File.Delete(PathDiario);
+                    LibroDiario.GrabarAsiento(listaAsientos);
+                    string Path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Files", "Diario.txt");
+                    Console.WriteLine();
+                    Console.WriteLine($"Éxito! Se ha generado/actualizado el Libro diario en la ruta: {Path}");
+
                 }
+
+                Console.ReadKey();
             }
         }
     }

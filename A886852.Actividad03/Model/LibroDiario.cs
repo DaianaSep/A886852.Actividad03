@@ -13,15 +13,16 @@ namespace A886852.Actividad03
         {
             string Path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "Files", "Diario.txt");
 
-                foreach (Asiento a in listaAsientos)
+            foreach (Asiento a in listaAsientos)
+            {
+                foreach (LineaAsiento lineaAsiento in a.ListaLineas)
                 {
-                    foreach (LineaAsiento lineaAsiento in a.ListaLineas)
-                    {
-                        File.AppendAllText(Path, $"{a.NumAsiento}|{a.Fecha:dd/MM/yyyy}|{lineaAsiento.CodCuenta}|{lineaAsiento.Debe}|{lineaAsiento.Haber}" + System.Environment.NewLine);
-                    }
+                   
+                        string strDebe = String.Format("{0:#,####0.00}", lineaAsiento.Debe);
+                        string strHaber = String.Format("{0:#,####0.00}", lineaAsiento.Haber);
+                        File.AppendAllText(Path, $"{a.NumAsiento}|{a.Fecha:dd/MM/yyyy}|{lineaAsiento.CodCuenta}|{strDebe}|{strHaber}" + System.Environment.NewLine);
                 }
-            Console.WriteLine($"Éxito! Se ha generado/actualizado el Libro diario en la ruta: {Path}");
-
+            }
         }
 
         public static int GetUltAsiento()
